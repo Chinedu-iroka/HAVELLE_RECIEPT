@@ -7,9 +7,12 @@
     <meta charset="UTF-8">
     <title>Invoice {{ invoice.invoice_number }}</title>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         /* ===============================
-           PRINT CONTROLS
+           PRINT & UI CONTROLS
         ================================ */
         @media print {
             .no-print {
@@ -17,12 +20,9 @@
             }
         }
 
-        /* ===============================
-           VARIABLES
-        ================================ */
         :root {
-            --brand-navy: #0a2342;
-            --brand-red: #b22222;
+            --brand-navy: #00203F;
+            --brand-red: #ED1C24;
             --brand-green: #28a745;
             --border-light: #e0e0e0;
             --text-dark: #333;
@@ -40,13 +40,14 @@
            MAIN CONTAINER
         ================================ */
         .invoice-container {
-            max-width: 900px;
+            max-width: 850px;
             margin: 20px auto;
             background: #fff;
-            padding: 50px 50px 160px;
+            padding: 50px 50px 60px;
+            /* Space for footer graphic */
             border: 1px solid var(--border-light);
             position: relative;
-            min-height: 1050px;
+            min-height: 900px;
             display: flex;
             flex-direction: column;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
@@ -63,7 +64,8 @@
         }
 
         .logo-section img {
-            max-height: 80px;
+            max-height: 250px;
+            width: 250px;
         }
 
         .invoice-title {
@@ -71,6 +73,7 @@
             font-weight: 800;
             color: var(--brand-navy);
             margin: 0;
+            text-transform: uppercase;
         }
 
         /* ===============================
@@ -85,7 +88,7 @@
 
         .meta-data h3 {
             color: var(--brand-red);
-            font-size: 14px;
+            font-size: 15px;
             text-transform: uppercase;
             margin: 0 0 5px;
             letter-spacing: 1px;
@@ -94,7 +97,13 @@
         .meta-data p {
             margin: 0 0 20px;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 16px;
+        }
+
+        .client-section h3 {
+            color: var(--brand-navy);
+            font-size: 18px;
+            margin-bottom: 10px;
         }
 
         .client-details {
@@ -107,6 +116,7 @@
         .table-section table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
         .table-section thead {
@@ -117,8 +127,8 @@
         .table-section th {
             padding: 15px;
             text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 1px;
+            font-size: 15px;
+            text-align: left;
         }
 
         .table-section td {
@@ -126,28 +136,43 @@
             border-bottom: 1px solid var(--border-light);
         }
 
+        .table-section th:last-child,
         .table-section td:last-child {
             text-align: right;
-            color: var(--brand-red);
-            font-weight: 500;
         }
 
         /* ===============================
-           TOTALS
+           TOTALS & STAMP
         ================================ */
         .totals-wrapper {
-            margin-top: 30px;
+            margin-top: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 12px;
+            gap: 10px;
             position: relative;
+        }
+
+        .paid-stamp {
+            position: absolute;
+            left: -180px;
+            top: 20px;
+            transform: rotate(-15deg);
+            border: 4px solid var(--brand-green);
+            color: var(--brand-green);
+            padding: 10px 25px;
+            font-size: 32px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 5;
         }
 
         .subtotal-box {
             background: var(--brand-navy);
             color: #fff;
-            padding: 16px 24px;
+            padding: 15px 25px;
             min-width: 280px;
             display: flex;
             justify-content: space-between;
@@ -155,98 +180,49 @@
         }
 
         .total-due-box {
-            border: 2px solid var(--brand-green);
-            padding: 18px 24px;
+            border: 2px solid var(--brand-red);
+            padding: 15px 25px;
             min-width: 280px;
             text-align: right;
         }
 
+        .total-due-box.paid-border {
+            border-color: var(--brand-green);
+        }
+
         .total-due-box span {
-            font-size: 12px;
+            font-size: 15px;
             text-transform: uppercase;
             font-weight: bold;
-            color: var(--brand-green);
         }
 
         .total-due-box h2 {
             margin: 5px 0 0;
-            font-size: 24px;
-            color: var(--brand-green);
-        }
-
-        /* ===============================
-           PAID STAMP
-        ================================ */
-        .paid-stamp {
-            position: absolute;
-            left: -160px;
-            top: 10px;
-            transform: rotate(-15deg);
-            border: 4px solid var(--brand-green);
-            color: var(--brand-green);
-            padding: 10px 24px;
             font-size: 28px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 8px;
-            opacity: 0.85;
         }
 
         /* ===============================
-           FOOTER CONTENT
+           FOOTER
         ================================ */
         .footer-content {
-            margin-top: auto;
+            margin-top: 30px;
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 18px;
             z-index: 10;
             position: relative;
+            padding-bottom: 20px;
         }
 
-        .terms-section {
-            max-width: 360px;
-        }
-
-        .payment-section {
-            text-align: right;
-            line-height: 1.8;
-        }
-
-        /* ===============================
-           FOOTER GRAPHIC (UNCHANGED)
-        ================================ */
         .footer-graphic {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 120px;
-            background: linear-gradient(135deg,
-                    var(--brand-navy) 0%,
-                    var(--brand-red) 100%);
+            height: 80px;
+            background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-red) 100%);
             clip-path: polygon(0 50%, 100% 0, 100% 100%, 0 100%);
             z-index: 1;
-        }
-
-        /* ===============================
-           PRINT
-        ================================ */
-        @media print {
-            body {
-                background: none;
-                padding: 0;
-            }
-
-            .invoice-container {
-                border: none;
-                box-shadow: none;
-                overflow: hidden;
-            }
-
-            .footer-graphic {
-                -webkit-print-color-adjust: exact;
-            }
         }
     </style>
 </head>
@@ -255,21 +231,19 @@
     <div class="no-print"
         style="max-width: 850px; margin: 20px auto; display: flex; gap: 10px; justify-content: flex-end;">
         <button onclick="downloadPDF()"
-            style="background: #00203F; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            style="background: var(--brand-navy); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
             Download PDF
         </button>
         <button onclick="downloadPNG()"
-            style="background: #ED1C24; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            style="background: var(--brand-red); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
             Download PNG
         </button>
     </div>
-    <div class="invoice-container">
-        {% load static %}
 
-        <!-- HEADER -->
+    <div class="invoice-container">
         <header class="header">
             <div class="logo-section">
-                <img src="{% static 'images/logo.png' %}" alt="Havelle Logo">
+                <img src="{% static 'images/logo.png' %}" alt="Logo">
             </div>
             <h1 class="invoice-title">Invoice</h1>
         </header>
@@ -278,7 +252,6 @@
             <div class="meta-data">
                 <h3>Invoice No</h3>
                 <p>#{{ invoice.invoice_number }}</p>
-
                 <h3>Invoice Date</h3>
                 <p>{{ invoice.invoice_date|date:"d/m/Y" }}</p>
 
@@ -299,7 +272,7 @@
                         <tr>
                             <th>Description</th>
                             <th style="width: 50px;">Qty</th>
-                            <th style="width: 120px;">Subtotal</th>
+                            <th style="width: 140px;">Subtotal</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -313,14 +286,9 @@
                     </tbody>
                 </table>
 
-                <div class="totals-wrapper"
-                    style="flex-direction: column; align-items: flex-end; gap: 10px; position: relative;">
+                <div class="totals-wrapper">
                     {% if invoice.is_paid %}
-                    <div style="position: absolute; left: -150px; top: 0; border: 4px solid #28a745; color: #28a745; 
-                    padding: 10px 20px; font-size: 30px; font-weight: bold; transform: rotate(-15deg); 
-                    text-transform: uppercase; border-radius: 10px; opacity: 0.8;">
-                        Fully Paid
-                    </div>
+                    <div class="paid-stamp">Fully Paid</div>
                     {% endif %}
 
                     <div class="subtotal-box">
@@ -328,68 +296,59 @@
                         <span>₦{{ invoice.get_total|floatformat:2|intcomma }}</span>
                     </div>
 
-                    <span>₦{{ invoice.paid_amount|floatformat:2|intcomma }}</span>
+                    {% if not invoice.is_paid %}
+                    <div style="display:flex; justify-content:space-between; min-width: 280px; padding: 5px 25px;">
+                        <span style="font-weight: 600;">Amount Paid</span>
+                        <span>₦{{ invoice.paid_amount|floatformat:2|intcomma }}</span>
+                    </div>
+                    {% endif %}
 
-                    <h2>₦{{ invoice.get_balance_due|floatformat:2|intcomma }}</h2>
-                </div>
-
-                {% if not invoice.is_paid %}
-                <div
-                    style="display:flex; justify-content:space-between; min-width: 250px; padding: 10px 20px; border-bottom: 1px solid var(--border-light);">
-                    <span style="color: var(--text-dark); font-weight: 600;">Amount Paid</span>
-                    <span style="color: var(--accent-blue);">₦{{ invoice.paid_amount|floatformat:2 }}</span>
-                </div>
-                {% endif %}
-
-                <div class="total-due-box"
-                    style="border: 2px solid {% if invoice.is_paid %}#28a745{% else %}var(--brand-red){% endif %}; min-width: 250px;">
-                    <span
-                        style="color: {% if invoice.is_paid %}#28a745{% else %}var(--brand-red){% endif %}; font-weight: bold; text-transform: uppercase;">
-                        Balance Due
-                    </span>
-                    <h2
-                        style="color: {% if invoice.is_paid %}#28a745{% else %}var(--brand-red){% endif %}; margin: 5px 0 0 0;">
-                        ₦{{ invoice.get_balance_due|floatformat:2 }}
-                    </h2>
+                    <div class="total-due-box {% if invoice.is_paid %}paid-border{% endif %}">
+                        <span
+                            style="color: {% if invoice.is_paid %}var(--brand-green){% else %}var(--brand-red){% endif %};">
+                            Balance Due
+                        </span>
+                        <h2
+                            style="color: {% if invoice.is_paid %}var(--brand-green){% else %}var(--brand-red){% endif %};">
+                            ₦{{ invoice.get_balance_due|floatformat:2|intcomma }}
+                        </h2>
+                    </div>
                 </div>
             </div>
         </div>
 
         <footer class="footer-content">
             <div class="terms-section">
-                <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Terms & Conditions</h4>
-                <p>All bookings are confirmed upon payment. Commitment fees are non-refundable. Extra time beyond the
-                    agreed period is charged at ₦20,000. We are not liable for delays caused by events beyond our
-                    control.</p>
+                <h4 style="color: var(--brand-navy); margin-bottom: 8px;">Terms & Conditions</h4>
+                <p style="margin:0;">All bookings are confirmed upon payment. <br>Commitment fees are
+                    non-refundable.<br>
+                    Extra time beyond the agreed period is charged at ₦20,000. <br> We are not liable for delays caused
+                    by events beyond our control (traffic, weather, government restrictions, etc).</p>
             </div>
             <div class="payment-section">
-                <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Payment Method</h4>
+                <h4 style="color: var(--brand-navy); margin-bottom: 8px;">Payment Method</h4>
                 <strong>{{ invoice.bank_name }}</strong><br>
-                Acc Name: {{ invoice.account_name }}<br>
-                Acc Number: {{ invoice.account_number }}
+                <strong>Acc Name: {{ invoice.account_name }}</strong><br>
+                <strong>Acc Number: {{ invoice.account_number }}</strong>
             </div>
         </footer>
 
         <div class="footer-graphic"></div>
-
     </div>
 
-
     <script>
-        // 1. Download as PDF
         function downloadPDF() {
             const element = document.querySelector('.invoice-container');
-            const options = {
+            const opt = {
                 margin: 0,
                 filename: 'Invoice_{{ invoice.invoice_number }}.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
-            html2pdf().set(options).from(element).save();
+            html2pdf().set(opt).from(element).save();
         }
 
-        // 2. Download as PNG
         function downloadPNG() {
             const element = document.querySelector('.invoice-container');
             html2canvas(element, { scale: 3, useCORS: true }).then(canvas => {
