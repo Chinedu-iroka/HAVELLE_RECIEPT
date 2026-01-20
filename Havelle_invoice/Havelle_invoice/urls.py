@@ -19,6 +19,7 @@ from django.urls import path
 from invoices.views import invoice_detail
 from django.conf import settings
 from django.conf.urls.static import static
+from invoices.views import invoice_detail
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('invoice/<int:invoice_id>/', invoice_detail, name='invoice_detail'),

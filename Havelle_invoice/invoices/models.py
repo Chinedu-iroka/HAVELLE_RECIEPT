@@ -12,13 +12,14 @@ class Invoice(models.Model):
     client_email = models.EmailField()
     
     # logo field we added in the previous step
-    logo = models.ImageField(upload_to='logos/', null=True, blank=True)
+    # logo = models.ImageField(upload_to='logos/', null=True, blank=True)
     
     # Payment Info
     bank_name = models.CharField(max_length=100)
     account_name = models.CharField(max_length=100)
     account_number = models.CharField(max_length=50)
-
+    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    is_paid = models.BooleanField(default=False, verbose_name="Fully Paid") # The new checkbox
     def __str__(self):
         return f"Invoice {self.invoice_number}"
 
@@ -30,6 +31,13 @@ class Invoice(models.Model):
     def get_total(self):
         # Now Total is just the Subtotal
         return self.get_subtotal
+
+    @property
+    def get_balance_due(self):
+        if self.is_paid:
+            return 0.00
+        # Calculates what is left after partial payment
+        return self.get_total - self.paid_amount
 
 class InvoiceItem(models.Model):
     # Links each item to a specific invoice
