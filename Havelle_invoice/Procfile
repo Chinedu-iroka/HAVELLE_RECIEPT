@@ -1,0 +1,1 @@
+web: gunicorn Havelle_invoice.wsgi:application
