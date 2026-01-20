@@ -6,5 +6,5 @@ def invoice_detail(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
     return render(request, 'invoices/invoice_detail.html', {'invoice': invoice})
     
-    def home(request):
-    return render(request, 'invoices/home.html')
+def home(request):
+    return render(request, 'invoices/invoice_detail.html')
