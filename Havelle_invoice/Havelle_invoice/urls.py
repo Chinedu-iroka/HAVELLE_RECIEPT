@@ -26,7 +26,6 @@ urlpatterns = [
     path('invoice/<int:invoice_id>/', invoice_detail, name='invoice_detail'),
     path('', views.home, name='home'), 
     path('', include('invoices.urls')),
-    path('setup-admin-access/', views.create_initial_superuser),
 ]
 
 if settings.DEBUG:
