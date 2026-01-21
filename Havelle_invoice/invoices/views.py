@@ -17,7 +17,7 @@ def create_initial_superuser(request):
     # Replace 'admin' and 'your_password' with your preferred login details
     if not User.objects.filter(username='admin').exists():
         User.objects.create_superuser(
-            username='havelle',
+            username='havelle_admin',
             email='lifestroglobal@gmail.com',
             password='dsdA13$%^&&' 
         )
