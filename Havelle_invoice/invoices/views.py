@@ -3,6 +3,7 @@ from .models import Invoice
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 
+
 # Create your views here.
 def invoice_detail(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
@@ -11,7 +12,6 @@ def invoice_detail(request, invoice_id):
 def home(request):
     return render(request, 'invoices/invoice_detail.html')
 
-
 def create_initial_superuser(request):
     User = get_user_model()
     # Replace 'admin' and 'your_password' with your preferred login details
@@ -19,7 +19,7 @@ def create_initial_superuser(request):
         User.objects.create_superuser(
             username='havelle_admin',
             email='lifestroglobal@gmail.com',
-            password='dsdA13$%^&&' 
+            password='dsdA13$%^&&'
         )
         return HttpResponse('Superuser created successfully!')
     else:
