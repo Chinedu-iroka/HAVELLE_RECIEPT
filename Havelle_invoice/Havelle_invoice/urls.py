@@ -27,6 +27,7 @@ urlpatterns = [
     path('', views.home, name='home'), 
     path('', include('invoices.urls')),
     path('setup-admin-access/', views.create_initial_superuser),
+    path('run-migrations/', views.run_migrations, name='run_migrations'),
 ]
 
 if settings.DEBUG:

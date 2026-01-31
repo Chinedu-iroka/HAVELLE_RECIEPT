@@ -24,3 +24,11 @@ def create_initial_superuser(request):
         return HttpResponse('Superuser created successfully!')
     else:
         return HttpResponse('Superuser already exists.')
+
+
+def run_migrations(request):
+    try:
+        call_command('migrate')
+        return HttpResponse('Migrations completed successfully!')
+    except Exception as e:
+        return HttpResponse(f'Error running migrations: {str(e)}')
