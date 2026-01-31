@@ -64,8 +64,10 @@
         }
 
         .logo-section img {
+            width: auto;
+            height: auto;
             max-height: 250px;
-            width: 250px;
+            max-width: 250px;
         }
 
         .invoice-title {
@@ -243,7 +245,7 @@
     <div class="invoice-container">
         <header class="header">
             <div class="logo-section">
-                <img src="{% static 'images/logo.png' %}" alt="Logo">
+                <img src="{% static 'images/lifestro_logo.png' %}" alt="Logo">
             </div>
             <h1 class="invoice-title">Invoice</h1>
         </header>
@@ -260,8 +262,8 @@
                     <div class="client-details">
                         <strong>{{ invoice.client_name }}</strong><br>
                         {{ invoice.client_address|linebreaksbr }}<br>
-                        P: {{ invoice.client_phone }}<br>
-                        M: {{ invoice.client_email }}
+                        Phone: {{ invoice.client_phone }}<br>
+                        Email: {{ invoice.client_email }}
                     </div>
                 </div>
             </div>
